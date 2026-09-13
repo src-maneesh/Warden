@@ -166,12 +166,18 @@
       <AdditionalDependencies>ksecdd.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalOptions>/kernel %(AdditionalOptions) /INTEGRITYCHECK</AdditionalOptions>
     </Link>
+    <DriverSign>
+      <FileDigestAlgorithm>SHA256</FileDigestAlgorithm>
+    </DriverSign>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Link>
       <AdditionalDependencies>ksecdd.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalOptions>/kernel %(AdditionalOptions) /INTEGRITYCHECK</AdditionalOptions>
     </Link>
+    <DriverSign>
+      <FileDigestAlgorithm>SHA256</FileDigestAlgorithm>
+    </DriverSign>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <Link>

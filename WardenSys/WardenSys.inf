@@ -1,98 +1,87 @@
 ;;;
-;;; WardenSys
+;;; WardenSys - Windows 11 24H2/25H2 primitive file-system minifilter
 ;;;
 
 [Version]
-Signature   = "$Windows NT$"
-; TODO - Change the Class and ClassGuid to match the Load Order Group value, see https://msdn.microsoft.com/en-us/windows/hardware/gg462963
-Class       = "ActivityMonitor"                         ;This is determined by the work this filter driver does
-ClassGuid   = {b86dff51-a31e-4bac-b3cf-e8cfe75c9fc2}    ;This value is determined by the Load Order Group value
+Signature   = "$WINDOWS NT$"
+Class       = "ActivityMonitor"
+ClassGuid   = {b86dff51-a31e-4bac-b3cf-e8cfe75c9fc2}
 Provider    = %ManufacturerName%
-DriverVer   = 
+DriverVer   = 09/13/2026,1.0.0.0
 CatalogFile = WardenSys.cat
-PnpLockDown=1
+PnpLockdown = 1
 
 [DestinationDirs]
-DefaultDestDir          = 12
-MiniFilter.DriverFiles  = 12            ;%windir%\system32\drivers
+MiniFilter.DriverFiles = 13
 
 ;;
-;; Default install sections
+;; Primitive-driver installation
 ;;
 
-[DefaultInstall]
-OptionDesc          = %ServiceDescription%
-CopyFiles           = MiniFilter.DriverFiles
+[DefaultInstall.NTamd64]
+OptionDesc = %ServiceDescription%
+CopyFiles  = MiniFilter.DriverFiles
 
-[DefaultInstall.Services]
-AddService          = %ServiceName%,,MiniFilter.Service
+[DefaultInstall.NTamd64.Services]
+AddService = %ServiceName%,,MiniFilter.Service
 
 ;;
-;; Default uninstall sections
+;; Service installation
 ;;
-
-[DefaultUninstall]
-DelFiles   = MiniFilter.DriverFiles
-
-[DefaultUninstall.Services]
-DelService = %ServiceName%,0x200      ;Ensure service is stopped before deleting
-
-;
-; Services Section
-;
 
 [MiniFilter.Service]
-DisplayName      = %ServiceName%
-Description      = %ServiceDescription%
-ServiceBinary    = %12%\%DriverName%.sys        ;%windir%\system32\drivers\
-Dependencies     = "FltMgr"
-ServiceType      = 2                            ;SERVICE_FILE_SYSTEM_DRIVER
-StartType        = 3                            ;SERVICE_DEMAND_START
-ErrorControl     = 1                            ;SERVICE_ERROR_NORMAL
-; TODO - Change the Load Order Group value
-; LoadOrderGroup = "FSFilter Activity Monitor"
-LoadOrderGroup = "_TODO_Change_LoadOrderGroup_appropriately_"
-AddReg           = MiniFilter.AddRegistry
+DisplayName    = %ServiceName%
+Description    = %ServiceDescription%
+ServiceBinary  = %13%\%DriverName%.sys
+Dependencies   = "FltMgr"
+ServiceType    = 2
+StartType      = 3
+ErrorControl   = 1
+LoadOrderGroup = "FSFilter Activity Monitor"
+AddReg         = MiniFilter.AddRegistry
 
-;
-; Registry Modifications
-;
+;;
+;; Minifilter registry configuration
+;; Windows 11 24H2+: minifilter instance data belongs below Parameters.
+;;
 
 [MiniFilter.AddRegistry]
-HKR,,"DebugFlags",0x00010001 ,0x0
-HKR,,"SupportedFeatures",0x00010001,0x3
-HKR,"Instances","DefaultInstance",0x00000000,%DefaultInstance%
-HKR,"Instances\"%Instance1.Name%,"Altitude",0x00000000,%Instance1.Altitude%
-HKR,"Instances\"%Instance1.Name%,"Flags",0x00010001,%Instance1.Flags%
+HKR,"Parameters","DebugFlags",0x00010001,0x0
+HKR,"Parameters","SupportedFeatures",0x00010001,0x3
+HKR,"Parameters\Instances","DefaultInstance",0x00000000,%DefaultInstance%
+HKR,"Parameters\Instances\%Instance1.Name%","Altitude",0x00000000,%Instance1.Altitude%
+HKR,"Parameters\Instances\%Instance1.Name%","Flags",0x00010001,%Instance1.Flags%
 
-;
-; Copy Files
-;
+;;
+;; Driver files
+;;
 
 [MiniFilter.DriverFiles]
 %DriverName%.sys
 
 [SourceDisksFiles]
-WardenSys.sys = 1,,
+WardenSys.sys = 1
 
 [SourceDisksNames]
-1 = %DiskId1%,,,
+1 = %DiskId1%
 
 ;;
-;; String Section
+;; Strings
 ;;
 
 [Strings]
-; TODO - Add your manufacturer
-ManufacturerName        = "Template"
-ServiceDescription      = "WardenSys Mini-Filter Driver"
-ServiceName             = "WardenSys"
-DriverName              = "WardenSys"
-DiskId1                 = "WardenSys Device Installation Disk"
+ManufacturerName   = "Template"
+ServiceDescription = "WardenSys Mini-Filter Driver"
+ServiceName        = "WardenSys"
+DriverName         = "WardenSys"
+DiskId1            = "WardenSys Device Installation Disk"
 
-;Instances specific information.
-DefaultInstance         = "WardenSys Instance"
-Instance1.Name          = "WardenSys Instance"
-; TODO - Change the altitude value, see https://msdn.microsoft.com/en-us/windows/hardware/drivers/ifs/load-order-groups-and-altitudes-for-minifilter-drivers
-Instance1.Altitude       = "_TODO_Change_Altitude_appropriately_"
-Instance1.Flags         = 0x0              ; Allow all attachments
+DefaultInstance    = "WardenSys Instance"
+Instance1.Name     = "WardenSys Instance"
+
+; MUST be replaced with the altitude assigned to your product by Microsoft.
+; 389400 is only a build/install-test value and must NOT be shipped.
+Instance1.Altitude = "389400"
+
+; 0x0 = allow normal automatic attachments.
+Instance1.Flags    = 0x0

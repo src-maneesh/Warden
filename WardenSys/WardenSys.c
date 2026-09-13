@@ -63,7 +63,7 @@ int EncodeHash(PUNICODE_STRING encodedString,PUCHAR data,ULONG size)
 	if(!encodedString)
 		return -1;
 
-	buff = (PWCHAR)ExAllocatePoolWithTag(NonPagedPool, encodedLen, TAG_WARDEN);
+	buff = (PWCHAR)ExAllocatePool2(NonPagedPool, encodedLen, TAG_WARDEN);
 	if (!buff)
 		return -2;
 
@@ -98,10 +98,10 @@ NTSTATUS CalculateFileHash(HANDLE fileHandle, PUNICODE_STRING fileEncodedHash)
 		return status;
 	}
 
-	readBuff = (PUCHAR)ExAllocatePoolWithTag(NonPagedPool, readBuffLen, TAG_WARDEN);
+	readBuff = (PUCHAR)ExAllocatePool2(NonPagedPool, readBuffLen, TAG_WARDEN);
 	if (!readBuff)
 	{
-		DbgPrint(__FUNCTION__": "" ExAllocatePoolWithTag returns NULL");
+		DbgPrint(__FUNCTION__": "" ExAllocatePool2 returns NULL");
 		return STATUS_INSUFFICIENT_RESOURCES;
 	}
 
@@ -172,10 +172,10 @@ NTSTATUS QueryHashEaAtrrib(HANDLE fileHandle, PUNICODE_STRING encodedHash)
 		return status;
 	}
 	DbgPrint(__FUNCTION__": "" ZwQueryInformationFile returns= %d \n", fileEaInfo.EaSize);
-	eaBuff = (PFILE_FULL_EA_INFORMATION)ExAllocatePoolWithTag(NonPagedPool, fileEaInfo.EaSize, TAG_WARDEN);
+	eaBuff = (PFILE_FULL_EA_INFORMATION)ExAllocatePool2(NonPagedPool, fileEaInfo.EaSize, TAG_WARDEN);
 	if (!eaBuff)
 	{
-		DbgPrint(__FUNCTION__": "" ExAllocatePoolWithTag returns NULL");
+		DbgPrint(__FUNCTION__": "" ExAllocatePool2 returns NULL");
 		return STATUS_INSUFFICIENT_RESOURCES;
 	}
 	 
@@ -201,10 +201,10 @@ NTSTATUS QueryHashEaAtrrib(HANDLE fileHandle, PUNICODE_STRING encodedHash)
 		{
 			encodedHash->Length = 0;
 			encodedHash->MaximumLength = ea->EaValueLength * sizeof(WCHAR) + sizeof(WCHAR);
-			encodedHash->Buffer = (PWCHAR)ExAllocatePoolWithTag(NonPagedPool, encodedHash->MaximumLength, TAG_WARDEN);
+			encodedHash->Buffer = (PWCHAR)ExAllocatePool2(NonPagedPool, encodedHash->MaximumLength, TAG_WARDEN);
 			if (!encodedHash->Buffer)
 			{
-				DbgPrint(__FUNCTION__": "" ExAllocatePoolWithTag returns NULL");
+				DbgPrint(__FUNCTION__": "" ExAllocatePool2 returns NULL");
 				status = STATUS_INSUFFICIENT_RESOURCES;
 				goto end;
 			}
